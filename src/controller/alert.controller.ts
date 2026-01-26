@@ -32,3 +32,21 @@ export const createAlert = async (
         next(err);
     }
 };
+
+export const getAllAlerts = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const alerts = await AlertModel.find()
+            .populate("createdBy", "firstName lastName role")
+            .sort({ createdAt: -1 });
+
+        res.json(
+            new CustomResponse(200, "Alerts fetched", alerts)
+        );
+    } catch (err) {
+        next(err);
+    }
+};
