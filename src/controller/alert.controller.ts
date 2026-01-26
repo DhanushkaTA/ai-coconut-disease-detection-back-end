@@ -81,3 +81,30 @@ export const getAlertById = async (
         next(err);
     }
 };
+
+export const updateAlert = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const alert = await AlertModel.findById(req.params.id);
+
+        if (!alert) {
+            return next(new AppError("Alert not found", 404));
+        }
+
+        if (!alert.createdBy.equals(req.user?._id)) {
+            return next(new AppError("Unauthorized", 403));
+        }
+
+        Object.assign(alert, req.body);
+        await alert.save();
+
+        res.json(
+            new CustomResponse(200, "Alert updated", alert)
+        );
+    } catch (err) {
+        next(err);
+    }
+};
