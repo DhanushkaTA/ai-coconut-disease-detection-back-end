@@ -50,3 +50,34 @@ export const getAllAlerts = async (
         next(err);
     }
 };
+
+export const getAlertById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        let alert_id = req.params.id;
+        if (!alert_id){
+            throw new AppError(
+                "Something is missing! Please check again and try again",
+                400
+            )
+        }
+
+        console.log(alert_id)
+
+        const alert = await AlertModel.findById(alert_id)
+            .populate("createdBy", "firstName lastName");
+
+        if (!alert) {
+            return next(new AppError("Alert not found", 404));
+        }
+
+        res.json(
+            new CustomResponse(200, "Alert fetched", alert)
+        );
+    } catch (err) {
+        next(err);
+    }
+};
