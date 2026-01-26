@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import * as GlobalErrorHandler from "./exception/ExceptionHandler"
 import {AppError} from "./util/AppError";
 import {StatusCodes} from "./util/StatusCode";
+import AuthRoutes from "./route/auth.routes";
 
 let app = express();
 
@@ -28,6 +29,8 @@ app.get('/', (req, res) => {
 app.get('/products', (req, res) => {
     res.send('<h1>Products page</h1>');
 });
+
+app.use("/api/v1/auth",AuthRoutes)
 
 
 // this should always be the end of the routs
