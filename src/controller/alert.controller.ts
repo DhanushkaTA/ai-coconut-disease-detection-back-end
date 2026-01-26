@@ -108,3 +108,29 @@ export const updateAlert = async (
         next(err);
     }
 };
+
+export const deleteAlert = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const alert = await AlertModel.findById(req.params.id);
+
+        if (!alert) {
+            return next(new AppError("Alert not found", 404));
+        }
+
+        if (!alert.createdBy.equals(req.user?._id)) {
+            return next(new AppError("Unauthorized", 403));
+        }
+
+        await alert.deleteOne();
+
+        res.json(
+            new CustomResponse(200, "Alert deleted")
+        );
+    } catch (err) {
+        next(err);
+    }
+};
