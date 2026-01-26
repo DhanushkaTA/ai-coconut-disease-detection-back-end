@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 export interface IAlert {
     _id: Types.ObjectId;
@@ -10,3 +10,13 @@ export interface IAlert {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IUser extends mongoose.Document {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    role: string;
+    _id: mongoose.Types.ObjectId;
+}
+

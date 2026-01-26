@@ -7,6 +7,7 @@ import * as GlobalErrorHandler from "./exception/ExceptionHandler"
 import {AppError} from "./util/AppError";
 import {StatusCodes} from "./util/StatusCode";
 import AuthRoutes from "./route/auth.routes";
+import AlertRoutes from "./route/alert.routes";
 
 let app = express();
 
@@ -31,7 +32,7 @@ app.get('/products', (req, res) => {
 });
 
 app.use("/api/v1/auth",AuthRoutes)
-
+app.use("/api/v1/alerts", AlertRoutes);
 
 // this should always be the end of the routs
 //this is for unhandled routes

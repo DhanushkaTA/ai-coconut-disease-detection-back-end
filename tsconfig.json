@@ -8,5 +8,5 @@
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/type/**/*.d.ts"],
 }

@@ -4,7 +4,7 @@ import { AppError } from "../util/AppError";
 import { CustomResponse } from "../util/CustomResponse";
 
 export const createAlert = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
@@ -83,7 +83,7 @@ export const getAlertById = async (
 };
 
 export const updateAlert = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
@@ -110,7 +110,7 @@ export const updateAlert = async (
 };
 
 export const deleteAlert = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
@@ -136,7 +136,7 @@ export const deleteAlert = async (
 };
 
 export const toggleLike = async (
-    req: Request,
+    req:  any,
     res: Response,
     next: NextFunction
 ) => {
