@@ -134,3 +134,39 @@ export const deleteAlert = async (
         next(err);
     }
 };
+
+export const toggleLike = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const alert = await AlertModel.findById(req.params.id);
+
+        if (!alert) {
+            return next(new AppError("Alert not found", 404));
+        }
+
+        const userId = req.user!._id;
+
+        const index = alert.likes.findIndex(
+            id => id.equals(userId)
+        );
+
+        if (index === -1) {
+            alert.likes.push(userId);
+        } else {
+            alert.likes.splice(index, 1);
+        }
+
+        await alert.save();
+
+        res.json(
+            new CustomResponse(200, "Like updated", {
+                likesCount: alert.likes.length
+            })
+        );
+    } catch (err) {
+        next(err);
+    }
+};
