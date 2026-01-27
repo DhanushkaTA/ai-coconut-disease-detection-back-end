@@ -4,6 +4,7 @@ import {CustomResponse} from "../util/CustomResponse";
 import {JWT_SECRET, NODE_ENV} from "../config/env";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {IUser} from "../type/schema.type";
 
 const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -51,7 +52,7 @@ export const login = async (req: Request, res: Response, next:NextFunction) => {
     const { username, password } = req.body;
 
     try {
-        const user = await UserModel.findOne({ username: username }).select("+password");
+        const user:IUser = await UserModel.findOne({ username: username }).select("+password");
 
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
