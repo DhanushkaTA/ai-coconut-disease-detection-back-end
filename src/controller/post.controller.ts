@@ -3,6 +3,7 @@ import PostModel from "../model/post.model";
 import { CustomResponse } from "../util/CustomResponse";
 import { AppError } from "../util/AppError";
 import { getIO } from "../socket/socket";
+import {IPost} from "../type/schema.type";
 
 
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
@@ -48,6 +49,29 @@ export const getPostById = async (req: Request, res: Response, next: NextFunctio
         }
 
         res.json(new CustomResponse(200, "Post fetched", post));
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const post: IPost = await PostModel.findById(req.params.id, undefined, undefined);
+
+        if (!post) {
+            return next(new AppError("Post not found", 404));
+        }
+
+        if (
+            !post.createdBy.equals(req.user!._id) &&
+            req.user!.role !== "admin"
+        ) {
+            return next(new AppError("Unauthorized", 403));
+        }
+
+        await post.deleteOne();
+
+        res.json(new CustomResponse(200, "Post deleted"));
     } catch (err) {
         next(err);
     }
