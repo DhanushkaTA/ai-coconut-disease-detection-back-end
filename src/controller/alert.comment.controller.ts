@@ -84,3 +84,33 @@ export const updateComment = async (
         next(err);
     }
 };
+
+export const deleteComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const comment =
+            await AlertCommentModel.findById(req.params.commentId, undefined, undefined);
+
+        if (!comment) {
+            return next(new AppError("Comment not found", 404));
+        }
+
+        if (
+            !comment.userId.equals(req.user!._id) &&
+            req.user!.role !== "admin"
+        ) {
+            return next(new AppError("Unauthorized", 403));
+        }
+
+        await comment.deleteOne();
+
+        res.json(
+            new CustomResponse(200, "Comment deleted")
+        );
+    } catch (err) {
+        next(err);
+    }
+};
