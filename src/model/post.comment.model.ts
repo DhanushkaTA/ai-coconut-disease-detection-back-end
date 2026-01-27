@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import { IPostComment } from "../type/schema.type";
 
-const PostCommentSchema = new Schema<IPostComment>(
+const PostCommentSchema =
+    new Schema<IPostComment>(
     {
         postId: {
             type: Schema.Types.ObjectId,
