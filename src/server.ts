@@ -25,7 +25,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
-// 1. Define your specific routes
+
 app.get('/', (req, res) => {
     res.send('<h1>Home page</h1>');
 });
@@ -33,6 +33,8 @@ app.get('/', (req, res) => {
 app.get('/products', (req, res) => {
     res.send('<h1>Products page</h1>');
 });
+
+// ----------- app routes ------------
 
 app.use("/api/v1/auth",AuthRoutes)
 app.use("/api/v1/alerts", AlertRoutes);
@@ -56,10 +58,10 @@ app.use((
 //set global error handler middleware
 app.use(GlobalErrorHandler.exceptionHandler)
 
-// Initialize socket
+// create server
 const server = http.createServer(app);
 
-// Initialize socket
+//initialize socket
 initSocket(server);
 
 server.listen(PORT, async () => {
