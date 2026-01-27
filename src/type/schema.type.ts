@@ -38,3 +38,13 @@ export interface IPost extends mongoose.Document{
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IPostComment {
+    _id: Types.ObjectId;
+    postId: Types.ObjectId;
+    userId: Types.ObjectId;
+    parentCommentId?: Types.ObjectId | null;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
