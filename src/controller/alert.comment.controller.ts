@@ -31,3 +31,24 @@ export const addComment = async (
         next(err);
     }
 };
+
+export const getCommentsByAlert = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { alertId } = req.params;
+
+        const comments =
+            await AlertCommentModel.findById(alertId, undefined, undefined)
+            .populate("userId", "firstName lastName profilePic")
+            .sort({ createdAt: 1 });
+
+        res.json(
+            new CustomResponse(200, "Comments fetched", comments)
+        );
+    } catch (err) {
+        next(err);
+    }
+};
