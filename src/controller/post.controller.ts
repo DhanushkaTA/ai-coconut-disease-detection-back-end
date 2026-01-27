@@ -25,3 +25,15 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
         next(err);
     }
 };
+
+export const getAllPosts = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const posts = await PostModel.find()
+            .populate("createdBy", "firstName lastName profilePic")
+            .sort({ createdAt: -1 });
+
+        res.json(new CustomResponse(200, "Posts fetched", posts));
+    } catch (err) {
+        next(err);
+    }
+};
