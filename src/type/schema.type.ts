@@ -20,3 +20,11 @@ export interface IUser extends mongoose.Document {
     _id: mongoose.Types.ObjectId;
 }
 
+export interface IAlertComment {
+    _id: Types.ObjectId;
+    alertId: Types.ObjectId;
+    userId: Types.ObjectId;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
