@@ -5,7 +5,7 @@ import {
     getAlertById,
     updateAlert,
     deleteAlert,
-    toggleLike
+    toggleLike, getLatestAlerts
 } from "../controller/alert.controller";
 // import { protect } from "../middleware/auth.middleware";
 // import { restrictTo } from "../middleware/role.middleware";
@@ -15,6 +15,10 @@ const router = Router();
 router.get("/",
     // protect,
     getAllAlerts);
+
+router.get("/latest",
+    // protect,
+    getLatestAlerts);
 router.get("/:id",
     // protect,
     getAlertById);
@@ -34,5 +38,7 @@ router.delete("/:id",
 router.post("/:id/like",
     // protect,
     toggleLike);
+
+
 
 export default router;

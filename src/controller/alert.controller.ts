@@ -170,3 +170,23 @@ export const toggleLike = async (
         next(err);
     }
 };
+
+export const getLatestAlerts = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        // console.log('Here i am')
+        const alerts = await AlertModel.find()
+            .populate("createdBy", "firstName lastName role")
+            .sort({ createdAt: -1 }) // newest first
+            .limit(5);              // only 5 alerts
+
+        res.status(200).json(
+            new CustomResponse(200, "Latest alerts fetched", alerts)
+        );
+    } catch (err) {
+        next(err);
+    }
+};
