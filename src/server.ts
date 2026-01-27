@@ -7,6 +7,10 @@ import * as GlobalErrorHandler from "./exception/ExceptionHandler"
 import {AppError} from "./util/AppError";
 import {StatusCodes} from "./util/StatusCode";
 import AuthRoutes from "./route/auth.routes";
+import AlertRoutes from "./route/alert.routes";
+import {initSocket} from "./socket/socket";
+import http from "http";
+import AlertCommentRoutes from "./route/alert.comment.routes";
 
 let app = express();
 
@@ -21,7 +25,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
-// 1. Define your specific routes
+
 app.get('/', (req, res) => {
     res.send('<h1>Home page</h1>');
 });
@@ -30,8 +34,11 @@ app.get('/products', (req, res) => {
     res.send('<h1>Products page</h1>');
 });
 
-app.use("/api/v1/auth",AuthRoutes)
+// ----------- app routes ------------
 
+app.use("/api/v1/auth",AuthRoutes)
+app.use("/api/v1/alerts", AlertRoutes);
+app.use("/api/v1/alert-comments", AlertCommentRoutes);
 
 // this should always be the end of the routs
 //this is for unhandled routes
@@ -51,9 +58,13 @@ app.use((
 //set global error handler middleware
 app.use(GlobalErrorHandler.exceptionHandler)
 
-app.listen(PORT, async () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+// create server
+const server = http.createServer(app);
 
-    // connect to database
+//initialize socket
+initSocket(server);
+
+server.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
     await connectToDatabase();
-})
+});
