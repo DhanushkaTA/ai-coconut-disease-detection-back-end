@@ -37,3 +37,18 @@ export const getAllPosts = async (_req: Request, res: Response, next: NextFuncti
         next(err);
     }
 };
+
+export const getPostById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const post = await PostModel.findById(req.params.id, undefined, undefined)
+            .populate("createdBy", "firstName lastName profilePic");
+
+        if (!post) {
+            return next(new AppError("Post not found", 404));
+        }
+
+        res.json(new CustomResponse(200, "Post fetched", post));
+    } catch (err) {
+        next(err);
+    }
+};
