@@ -8,6 +8,8 @@ import {AppError} from "./util/AppError";
 import {StatusCodes} from "./util/StatusCode";
 import AuthRoutes from "./route/auth.routes";
 import AlertRoutes from "./route/alert.routes";
+import {initSocket} from "./socket/socket";
+import http from "http";
 
 let app = express();
 
@@ -52,9 +54,13 @@ app.use((
 //set global error handler middleware
 app.use(GlobalErrorHandler.exceptionHandler)
 
-app.listen(PORT, async () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+// Initialize socket
+const server = http.createServer(app);
 
-    // connect to database
+// Initialize socket
+initSocket(server);
+
+server.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
     await connectToDatabase();
-})
+});
