@@ -6,7 +6,7 @@ import { getIO } from "../socket/socket";
 import {IPost} from "../type/schema.type";
 
 
-export const createPost = async (req: Request, res: Response, next: NextFunction) => {
+export const createPost = async (req: any, res: Response, next: NextFunction) => {
     try {
         const { content, image } = req.body;
 
@@ -27,7 +27,7 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export const getAllPosts = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllPosts = async (req: any, res: Response, next: NextFunction) => {
     try {
         const posts = await PostModel.find()
             .populate("createdBy", "firstName lastName profilePic")
@@ -54,7 +54,7 @@ export const getPostById = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+export const deletePost = async (req: any, res: Response, next: NextFunction) => {
     try {
         const post: IPost = await PostModel.findById(req.params.id, undefined, undefined);
 
@@ -77,7 +77,7 @@ export const deletePost = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export const togglePostLike = async (req: Request, res: Response, next: NextFunction) => {
+export const togglePostLike = async (req: any, res: Response, next: NextFunction) => {
     try {
         const post: IPost = await PostModel.findById(req.params.id, undefined, undefined);
         if (!post) {
