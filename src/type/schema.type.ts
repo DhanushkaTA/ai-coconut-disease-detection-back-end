@@ -28,3 +28,13 @@ export interface IAlertComment extends mongoose.Document{
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IPost extends mongoose.Document{
+    _id: Types.ObjectId;
+    content: string;
+    image?: string;
+    likes: Types.ObjectId[];
+    createdBy: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
+}
