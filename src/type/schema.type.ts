@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
 
-export interface IAlert {
+export interface IAlert extends mongoose.Document{
     _id: Types.ObjectId;
     title: string;
     description: string;
@@ -20,7 +20,7 @@ export interface IUser extends mongoose.Document {
     _id: mongoose.Types.ObjectId;
 }
 
-export interface IAlertComment {
+export interface IAlertComment extends mongoose.Document{
     _id: Types.ObjectId;
     alertId: Types.ObjectId;
     userId: Types.ObjectId;

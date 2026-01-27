@@ -6,7 +6,7 @@ import AlertCommentModel from "../model/alert.comment.model";
 import {IAlertComment} from "../type/schema.type";
 
 export const addComment = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
@@ -55,12 +55,12 @@ export const getCommentsByAlert = async (
 };
 
 export const updateComment = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const comment: IAlertComment =
+        const comment =
             await AlertCommentModel.findById(req.params.commentId, undefined, undefined);
 
         if (!comment) {
@@ -86,7 +86,7 @@ export const updateComment = async (
 };
 
 export const deleteComment = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
