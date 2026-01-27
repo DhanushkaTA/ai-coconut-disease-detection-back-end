@@ -76,3 +76,24 @@ export const deletePost = async (req: Request, res: Response, next: NextFunction
         next(err);
     }
 };
+
+export const togglePostLike = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const post: IPost = await PostModel.findById(req.params.id, undefined, undefined);
+        if (!post) {
+            return next(new AppError("Post not found", 404));
+        }
+
+        const userId = req.user!._id;
+        const index = post.likes.findIndex(id => id.equals(userId));
+
+        index === -1 ? post.likes.push(userId) : post.likes.splice(index, 1);
+        await post.save();
+
+        res.json(
+            new CustomResponse(200, "Like updated", { likes: post.likes.length })
+        );
+    } catch (err) {
+        next(err);
+    }
+}
