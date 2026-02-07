@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, {Document, Types} from "mongoose";
 
 export interface IAlert extends mongoose.Document{
     _id: Types.ObjectId;
@@ -17,6 +17,7 @@ export interface IUser extends mongoose.Document {
     username: string;
     password: string;
     email: string;
+    phoneNumber: string;
     role: string;
     _id: mongoose.Types.ObjectId;
 }
@@ -40,12 +41,20 @@ export interface IPost extends mongoose.Document{
     updatedAt: Date;
 }
 
-export interface IPostComment {
+export interface IPostComment extends mongoose.Document{
     _id: Types.ObjectId;
     postId: Types.ObjectId;
     userId: Types.ObjectId;
     parentCommentId?: Types.ObjectId | null;
     content: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IChat extends mongoose.Document {
+    _id: Types.ObjectId;
+    participants: mongoose.Types.ObjectId[];
+    lastMessage?: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }

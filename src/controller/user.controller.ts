@@ -52,7 +52,7 @@ export const login = async (req: Request, res: Response, next:NextFunction) => {
     const { username, password } = req.body;
 
     try {
-        const user:IUser = await UserModel.findOne({ username: username }).select("+password");
+        const user = await UserModel.findOne({ username: username }).select("+password");
 
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });

@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import {IUser} from "../type/schema.type";
 
 const ROLES = ["user", "admin", "moderator"] as const;
 
-const UserSchema = new mongoose.Schema<IUser>(
+const UserSchema = new mongoose.Schema(
     {
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
