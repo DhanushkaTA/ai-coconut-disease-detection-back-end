@@ -1,8 +1,5 @@
-// models/chat.model.ts
 import mongoose, { Schema, Document } from "mongoose";
 import {IChat} from "../../type/schema.type";
-
-
 
 const ChatSchema = new Schema<IChat>(
     {

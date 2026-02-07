@@ -58,3 +58,14 @@ export interface IChat extends mongoose.Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IMessage extends mongoose.Document {
+    _id: Types.ObjectId;
+    chatId: mongoose.Types.ObjectId;
+    senderId: mongoose.Types.ObjectId;
+    receiverId: mongoose.Types.ObjectId;
+    content: string;
+    isRead: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
