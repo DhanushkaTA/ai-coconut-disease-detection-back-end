@@ -4,6 +4,7 @@ import {CustomResponse} from "../util/CustomResponse";
 import {JWT_SECRET, NODE_ENV} from "../config/env";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {IUser} from "../type/schema.type";
 
 const COOKIE_OPTIONS = {
     httpOnly: true,
