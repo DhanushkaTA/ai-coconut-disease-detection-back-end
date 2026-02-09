@@ -11,7 +11,7 @@ import {JWT_SECRET} from "../config/env";
 import UserModel from "../model/user.model";
 // import * as AdminAuthService from "../services/AdminAuthService";
 
-export const verifyToken = async (req:any, res:express.Response, next:express.NextFunction) => {
+export const protect = async (req:any, res:express.Response, next:express.NextFunction) => {
 
     try {
 
