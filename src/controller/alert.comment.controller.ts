@@ -42,7 +42,7 @@ export const getCommentsByAlert = async (
         const { alertId } = req.params;
 
         const comments =
-            await AlertCommentModel.findById(alertId, undefined, undefined)
+            await AlertCommentModel.find({alertId:alertId}, undefined, undefined)
             .populate("userId", "firstName lastName profilePic")
             .sort({ createdAt: 1 });
 
