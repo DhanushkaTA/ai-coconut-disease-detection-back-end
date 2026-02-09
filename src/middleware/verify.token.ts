@@ -66,7 +66,7 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
         //4) Check user is still exists
 
         const user =
-            await UserModel.findById(decodedData.userId, undefined, undefined);
+            await UserModel.findById(decodedData._id, undefined, undefined);
 
         console.log(user)
 

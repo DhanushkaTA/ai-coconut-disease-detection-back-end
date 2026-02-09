@@ -7,36 +7,41 @@ import {
     deleteAlert,
     toggleLike, getLatestAlerts
 } from "../controller/alert.controller";
-// import { protect } from "../middleware/auth.middleware";
-// import { restrictTo } from "../middleware/role.middleware";
+import {protect} from "../middleware/verify.token";
+import {restrictTo} from "../middleware/role.verify";
+
 
 const router = Router();
 
 router.get("/",
-    // protect,
+    protect,
     getAllAlerts);
 
 router.get("/latest",
-    // protect,
+    protect,
     getLatestAlerts);
+
 router.get("/:id",
-    // protect,
+    protect,
     getAlertById);
 
 // Admin / Moderator only
 router.post("/",
-    // protect, restrictTo("admin", "moderator"),
+    protect,
+    restrictTo("admin", "moderator"),
     createAlert);
+
 router.put("/:id",
-    // protect, restrictTo("admin", "moderator"),
+    protect, restrictTo("admin", "moderator"),
     updateAlert);
+
 router.delete("/:id",
-    // protect, restrictTo("admin", "moderator"),
+    protect, restrictTo("admin", "moderator"),
     deleteAlert);
 
 // Likes (any logged-in user)
 router.post("/:id/like",
-    // protect,
+    protect,
     toggleLike);
 
 

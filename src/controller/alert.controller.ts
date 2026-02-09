@@ -11,6 +11,9 @@ export const createAlert = async (
     try {
         const { title, description, image } = req.body;
 
+        console.log(req.body)
+        console.log(req.user?.userId)
+
         if(!title || !description ){
             throw new AppError(
                 "Something is missing! Please check again and try again",
