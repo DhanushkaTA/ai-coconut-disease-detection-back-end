@@ -21,8 +21,11 @@ export const register = async (req: Request, res: Response, next:NextFunction) =
             email,
             phoneNumber,
             password,
+            role,
             profilePic
         } = req.body;
+
+        console.log(req.body)
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -33,6 +36,7 @@ export const register = async (req: Request, res: Response, next:NextFunction) =
             email,
             phoneNumber,
             password: hashedPassword,
+            role,
             profilePic // optional
         });
 
@@ -40,7 +44,8 @@ export const register = async (req: Request, res: Response, next:NextFunction) =
 
         res.status(201).send(new CustomResponse(
             201,
-            "User registered successfully"
+            "User registered successfully",
+            user
         ));
     } catch (e) {
         next(e)
@@ -87,6 +92,8 @@ export const login = async (req: Request, res: Response, next:NextFunction) => {
 
 };
 
-export const logout = async (_req: Request, res: Response) => {
+export const logout = async (req: any, res: Response) => {
+    console.log("Inside logout -------------------")
+    console.log(req.user)
     res.clearCookie("access_token").json({ message: "Logged out" });
 };
