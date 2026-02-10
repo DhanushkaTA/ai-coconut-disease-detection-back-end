@@ -5,21 +5,22 @@ import {
     updateComment,
     deleteComment
 } from "../controller/alert.comment.controller";
+import {protect} from "../middleware/verify.token";
 // import { protect } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.post("/:alertId",
-    // protect,
+    protect,
     addComment);
 router.get("/:alertId",
-    // protect,
+    protect,
     getCommentsByAlert);
 router.put("/:commentId",
-    // protect,
+    protect,
     updateComment);
 router.delete("/:commentId",
-    // protect,
+    protect,
     deleteComment);
 
 export default router;
