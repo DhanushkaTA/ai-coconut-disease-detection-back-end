@@ -6,24 +6,25 @@ import {
     getPostById,
     togglePostLike
 } from "../controller/post.controller";
+import {protect} from "../middleware/verify.token";
 // import { protect } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.post("/",
-    // protect,
+    protect,
     createPost);
 router.get("/",
-    // protect,
+    protect,
     getAllPosts);
 router.get("/:id",
-    // protect,
+    protect,
     getPostById);
 router.delete("/:id",
-    // protect,
+    protect,
     deletePost);
 router.post("/:id/like",
-    // protect,
+    protect,
     togglePostLike);
 
 export default router;

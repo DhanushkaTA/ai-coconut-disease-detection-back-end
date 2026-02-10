@@ -22,10 +22,14 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
         //then we can get jwt token
         let token: string | null = null;
 
-        //1) Extract token from authorization header
+        //1) Extract token from authorization cookies
 
-        if (req.headers.authorization && req.headers.authorization.startsWith(`Bearer`)){
-            token = req.headers.authorization.split(" ")[1];
+        // if (req.headers.authorization && req.headers.authorization.startsWith(`Bearer`)){
+        //     token = req.headers.authorization.split(" ")[1];
+        // }
+
+        if (req.cookies && req.cookies.access_token) {
+            token = req.cookies.access_token;
         }
 
         // Sent error msg if token not found in headers
