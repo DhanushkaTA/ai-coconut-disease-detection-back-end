@@ -12,6 +12,7 @@ import {initSocket} from "./socket/socket";
 import http from "http";
 import AlertCommentRoutes from "./route/alert.comment.routes";
 import PostRoutes from "./route/post.routes";
+import PostCommentRoutes from "./route/post.comment.routes";
 
 let app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/v1/auth",AuthRoutes)
 app.use("/api/v1/alerts", AlertRoutes);
 app.use("/api/v1/alert-comments", AlertCommentRoutes);
 app.use("/api/v1/posts", PostRoutes);
+app.use("/api/v1/post-comments", PostCommentRoutes);
 
 // this should always be the end of the routs
 //this is for unhandled routes

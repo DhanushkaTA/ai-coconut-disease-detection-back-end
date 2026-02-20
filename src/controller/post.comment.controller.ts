@@ -9,6 +9,8 @@ export const addComment = async (
     next: NextFunction
 ) => {
     try {
+        console.log(req.body);
+        
         const { content, parentCommentId } = req.body;
         const { postId } = req.params;
 

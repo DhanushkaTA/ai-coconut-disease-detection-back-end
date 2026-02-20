@@ -69,3 +69,8 @@ export interface IMessage extends mongoose.Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface ICommentWithReplies extends IPostComment {
+  _id: any;
+  replies: ICommentWithReplies[];
+}
