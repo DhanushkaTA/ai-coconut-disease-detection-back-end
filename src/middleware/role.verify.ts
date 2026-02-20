@@ -21,7 +21,7 @@ export const restrictTo = (...roles:string[]) => {
                 )
             }
 
-            //Access to perform this action
+            
             next();
 
         }catch (error){
