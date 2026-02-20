@@ -44,25 +44,39 @@ export const getAllAlerts = async (
 ) => {
     try {
         const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+        const limit = Number(req.query.limit) || 5;
+        const search = req.query.search as string;
 
-    console.log("Page:", page, "Limit:", limit)
+        const skip = (page - 1) * limit;
 
-    const skip = (page - 1) * limit;
+        // 🔥 search condition
+        const searchFilter = search
+        ? {
+            $or: [
+                { title: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } },
+            ],
+            }
+        : {};
 
-    const totalCount = await AlertModel.countDocuments();
+        const totalCount = await AlertModel.countDocuments(searchFilter);
 
-    const totalPages = Math.ceil(totalCount / limit);
+        const totalPages = Math.ceil(totalCount / limit);
 
-    const alerts = await AlertModel.find()
-      .populate("createdBy", "firstName lastName role")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+        const alerts = await AlertModel.find(searchFilter)
+        .populate("createdBy", "firstName lastName role")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
 
-    res.json(
-      new CustomResponse(200, "Alerts fetched", alerts, totalPages)
-    );
+        res.json(
+        new CustomResponse(
+            200,
+            "Alerts fetched",
+            alerts,
+            totalPages
+        )
+        );
     } catch (err) {
         next(err);
     }
