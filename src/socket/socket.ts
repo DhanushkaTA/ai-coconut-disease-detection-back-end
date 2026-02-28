@@ -123,8 +123,10 @@ export const getIO = () => {
 
 const chatSocketHandler = (socket: Socket) => {
 
-    socket.on("send_message", async ({ senderId, receiverId, content }) => {
+    socket.on("send_message", async ({ senderId, receiverId, content, image }) => {
 
+        /**
+         * 
         const chat: IChat = await getOrCreateChat(
             // socket.userId,
             senderId,
@@ -150,6 +152,45 @@ const chatSocketHandler = (socket: Socket) => {
 
         // emit to sender (using this, we can verify msg is sent)
         socket.emit("receive_message", message);
+
+        */
+
+        const chat = await getOrCreateChat(senderId, receiverId);
+
+        const message = await MessageModel.create({
+            chatId: chat._id,
+            senderId,
+            receiverId,
+            content,
+            image,
+        });
+
+        chat.lastMessage = message._id;
+        chat.updatedAt = new Date();
+        await chat.save();
+
+        // 🔔 Notify receiver (for unread badge)
+        io.to(receiverId).emit("receive_message_notification", message);
+
+        // 💬 Emit to chat room
+        io.to(`room_${chat._id}`).emit("receive_message", message);
+    });
+
+    // Read Receipt Socket
+    socket.on("mark_read", async ({ chatId, userId }) => {
+
+        await MessageModel.updateMany(
+            {
+            chatId,
+            receiverId: userId,
+            isRead: false,
+            },
+            { isRead: true }
+        );
+
+        io.to(`room_${chatId}`).emit("messages_read", {
+            chatId,
+        });
     });
 
 }

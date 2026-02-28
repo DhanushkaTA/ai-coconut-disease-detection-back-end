@@ -11,5 +11,8 @@ const ChatSchema = new Schema<IChat>(
     { timestamps: true }
 );
 
+// Prevent duplicate 1-1 chats
+ChatSchema.index({ participants: 1 });
+
 let ChatModel = mongoose.model("Chat", ChatSchema);
 export default ChatModel;

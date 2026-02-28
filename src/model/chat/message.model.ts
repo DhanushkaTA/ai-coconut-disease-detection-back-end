@@ -7,9 +7,13 @@ const MessageSchema = new Schema<IMessage>(
         senderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         receiverId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         content: { type: String, required: true },
+        image: {type: String},
         isRead: { type: Boolean, default: false }
     },
     { timestamps: true }
 );
+
+// Index for faster unread counting
+MessageSchema.index({ chatId: 1, receiverId: 1, isRead: 1 });
 
 export default mongoose.model("Message", MessageSchema);

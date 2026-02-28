@@ -65,6 +65,7 @@ export interface IMessage extends mongoose.Document {
     senderId: mongoose.Types.ObjectId;
     receiverId: mongoose.Types.ObjectId;
     content: string;
+    image: string;
     isRead: boolean;
     createdAt: Date;
     updatedAt: Date;

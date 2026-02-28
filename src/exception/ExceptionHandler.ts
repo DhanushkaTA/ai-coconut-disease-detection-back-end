@@ -8,7 +8,12 @@ export const exceptionHandler = (
     res: Response,
     _next: NextFunction
 ) => {
+    console.log(err.statusCode, err.status, err.name, err.message);
+    console.log(err);
+    
+    
     err.statusCode = err.statusCode || 500;
+    err.statusCode = err.name === "TokenExpiredError" ? 401 : err.statusCode;
     err.status = err.status || "error";
 
     if (NODE_ENV === "development") {
