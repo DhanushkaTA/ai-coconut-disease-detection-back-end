@@ -16,4 +16,5 @@ const MessageSchema = new Schema<IMessage>(
 // Index for faster unread counting
 MessageSchema.index({ chatId: 1, receiverId: 1, isRead: 1 });
 
-export default mongoose.model("Message", MessageSchema);
+let MessageModel = mongoose.model("Message", MessageSchema);
+export default MessageModel

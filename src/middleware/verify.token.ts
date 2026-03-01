@@ -15,7 +15,7 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
     try {
 
-        console.log(req.headers.authorization)
+        // console.log("A :",req.headers.authorization)
 
         // [Bearer <token>]
         //that's why authorizationToken split from ''(space)
@@ -65,14 +65,14 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
         // @ts-ignore
         const decodedData:any = await promisify(jwt.verify)(token, JWT_SECRET as Secret);
-        console.log(decodedData)
+        // console.log(decodedData)
 
         //4) Check user is still exists
 
         const user =
             await UserModel.findById(decodedData._id, undefined, undefined);
 
-        console.log(user)
+        // console.log(user)
 
 
         // If user not found send error

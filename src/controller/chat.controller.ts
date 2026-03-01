@@ -2,8 +2,31 @@
 import { Request, Response, NextFunction } from "express";
 import ChatModel from "../model/chat/chat.model";
 import { Types } from "mongoose";
-import MessageModel from "model/chat/message.model";
-import { CustomResponse } from "util/CustomResponse";
+import MessageModel from "../model/chat/message.model";
+import { CustomResponse } from "../util/CustomResponse";
+
+export const createChat = async (req: any, res:Response, next:NextFunction) => {
+    try{
+        const senderId = req.user._id;
+        const { receiverId } = req.body;
+
+        console.log("Creating chat between:", senderId, receiverId);
+        console.log("Creating chat re:",  receiverId.receiverId);
+
+        const chat = await getOrCreateChat(
+            senderId,
+            receiverId.receiverId
+        );
+
+        // res.json(chat);
+        res.status(201).json(
+                    new CustomResponse(201, "Create chat", chat)
+                );
+    }catch (err) {
+        next(err);
+    }
+  
+};
 
 export const getOrCreateChat = async (user1: string, user2: string) => {
 
