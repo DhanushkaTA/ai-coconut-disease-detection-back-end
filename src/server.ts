@@ -12,16 +12,20 @@ import {initSocket} from "./socket/socket";
 import http from "http";
 import AlertCommentRoutes from "./route/alert.comment.routes";
 import PostRoutes from "./route/post.routes";
+import PostCommentRoutes from "./route/post.comment.routes";
+import UserRoutes from "./route/user.routes";
+import ChatRoutes from "./route/chat.routes";
 
 let app = express();
 
 //set cors police
-app.use(
-    cors({
-        origin: '*',
-        credentials: true,
-    })
-)
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true,
+}));
+
+// app.options("*", cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
@@ -40,6 +44,9 @@ app.use("/api/v1/auth",AuthRoutes)
 app.use("/api/v1/alerts", AlertRoutes);
 app.use("/api/v1/alert-comments", AlertCommentRoutes);
 app.use("/api/v1/posts", PostRoutes);
+app.use("/api/v1/post-comments", PostCommentRoutes);
+app.use("/api/v1/users", UserRoutes);
+app.use("/api/v1/chats", ChatRoutes);
 
 // this should always be the end of the routs
 //this is for unhandled routes

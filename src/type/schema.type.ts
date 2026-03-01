@@ -65,7 +65,13 @@ export interface IMessage extends mongoose.Document {
     senderId: mongoose.Types.ObjectId;
     receiverId: mongoose.Types.ObjectId;
     content: string;
+    image: string;
     isRead: boolean;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface ICommentWithReplies extends IPostComment {
+  _id: any;
+  replies: ICommentWithReplies[];
 }

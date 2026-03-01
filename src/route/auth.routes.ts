@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, register, logout } from "../controller/user.controller";
+import { login, register, logout } from "../controller/auth.controller";
 import {restrictTo} from "../middleware/role.verify";
 import {protect} from "../middleware/verify.token";
 

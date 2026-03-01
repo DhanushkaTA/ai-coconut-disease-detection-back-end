@@ -15,17 +15,21 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
     try {
 
-        console.log(req.headers.authorization)
+        // console.log("A :",req.headers.authorization)
 
         // [Bearer <token>]
         //that's why authorizationToken split from ''(space)
         //then we can get jwt token
         let token: string | null = null;
 
-        //1) Extract token from authorization header
+        //1) Extract token from authorization cookies
 
-        if (req.headers.authorization && req.headers.authorization.startsWith(`Bearer`)){
-            token = req.headers.authorization.split(" ")[1];
+        // if (req.headers.authorization && req.headers.authorization.startsWith(`Bearer`)){
+        //     token = req.headers.authorization.split(" ")[1];
+        // }
+
+        if (req.cookies && req.cookies.access_token) {
+            token = req.cookies.access_token;
         }
 
         // Sent error msg if token not found in headers
@@ -61,14 +65,14 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
         // @ts-ignore
         const decodedData:any = await promisify(jwt.verify)(token, JWT_SECRET as Secret);
-        console.log(decodedData)
+        // console.log(decodedData)
 
         //4) Check user is still exists
 
         const user =
             await UserModel.findById(decodedData._id, undefined, undefined);
 
-        console.log(user)
+        // console.log(user)
 
 
         // If user not found send error

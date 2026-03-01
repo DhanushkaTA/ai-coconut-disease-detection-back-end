@@ -1,99 +1,78 @@
+import { Request, Response, NextFunction } from "express";
 import UserModel from "../model/user.model";
-import {Request, Response, NextFunction} from "express";
-import {CustomResponse} from "../util/CustomResponse";
-import {JWT_SECRET, NODE_ENV} from "../config/env";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import {IUser} from "../type/schema.type";
-
-const COOKIE_OPTIONS = {
-    httpOnly: true,
-    secure: NODE_ENV === "production",
-    sameSite: "strict" as const,
-};
-
-export const register = async (req: Request, res: Response, next:NextFunction) => {
-    try {
-        const {
-            firstName,
-            lastName,
-            username,
-            email,
-            phoneNumber,
-            password,
-            role,
-            profilePic
-        } = req.body;
-
-        console.log(req.body)
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = await UserModel.create({
-            firstName,
-            lastName,
-            username,
-            email,
-            phoneNumber,
-            password: hashedPassword,
-            role,
-            profilePic // optional
-        });
+import { CustomResponse } from "../util/CustomResponse";
 
 
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = (req.query.search as string) || "";
+    const role = (req.query.role as string) || "";
 
-        res.status(201).send(new CustomResponse(
-            201,
-            "User registered successfully",
-            user
-        ));
-    } catch (e) {
-        next(e)
+    const skip = (page - 1) * limit;
+
+   const filter: any = {};
+
+    // 🔎 Search filter
+    if (search) {
+    filter.$or = [
+        { username: { $regex: search, $options: "i" } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+    ];
     }
 
-};
-
-export const login = async (req: Request, res: Response, next:NextFunction) => {
-    const { username, password } = req.body;
-
-    try {
-        const user = await UserModel.findOne({ username: username }).select("+password");
-
-        if (!user) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        const token = jwt
-            .sign(
-                { _id: user._id, role: user.role },
-                JWT_SECRET,
-                { expiresIn: "7d" }
-            );
-
-        res
-            .cookie("access_token", token, COOKIE_OPTIONS)
-            .json({
-                message: "Login successful",
-                user: {
-                    id: user._id,
-                    email: user.email,
-                    role: user.role
-                }
-            });
-    } catch (e) {
-        next(e)
+    // 👤 Role filter
+    if (role) {
+        filter.role = role;
     }
 
+    const totalUsers = await UserModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalUsers / limit);
 
+    const users = await UserModel.find(filter)
+      .select("-password")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json(
+      new CustomResponse(200, "Users fetched", users, totalPages)
+    );
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const logout = async (req: any, res: Response) => {
-    console.log("Inside logout -------------------")
-    console.log(req.user)
-    res.clearCookie("access_token").json({ message: "Logged out" });
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const user = await UserModel.findById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json(new CustomResponse(404, "User not found"));
+    }
+
+    await UserModel.findByIdAndDelete(id);
+
+    res.json(
+      new CustomResponse(200, "User deleted successfully")
+    );
+  } catch (err) {
+    next(err);
+  }
 };

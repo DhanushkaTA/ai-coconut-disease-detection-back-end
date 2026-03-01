@@ -33,7 +33,9 @@ const PostCommentSchema =
     { timestamps: true }
 );
 
-export default mongoose.model(
+const PostCommentModel = mongoose.model(
     "PostComment",
     PostCommentSchema
 );
+
+export default PostCommentModel;
