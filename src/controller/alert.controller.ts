@@ -3,6 +3,7 @@ import AlertModel from "../model/alert.model";
 import { AppError } from "../util/AppError";
 import { CustomResponse } from "../util/CustomResponse";
 import { log } from "console";
+import AlertCommentModel from "../model/alert.comment.model";
 
 export const createAlert = async (
     req: any,
@@ -99,14 +100,22 @@ export const getAlertById = async (
         console.log(alert_id)
 
         const alert = await AlertModel.findById(alert_id)
-            .populate("createdBy", "firstName lastName");
+            .populate("createdBy", "firstName lastName profilePic");
 
         if (!alert) {
             return next(new AppError("Alert not found", 404));
         }
 
+         const commentCount = await AlertCommentModel.countDocuments({
+            alertId: alert._id,
+        });
+
         res.json(
-            new CustomResponse(200, "Alert fetched", alert)
+            new CustomResponse(200, "Alert fetched", {
+                ...alert.toObject(),
+                likeCount: alert.likes.length,
+                commentCount,
+            })
         );
     } catch (err) {
         next(err);
@@ -220,4 +229,39 @@ export const getLatestAlerts = async (
     } catch (err) {
         next(err);
     }
+};
+
+export const getTodayAlerts = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const alerts = await AlertModel.find({
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    })
+    .populate("createdBy", "firstName lastName role")
+    .sort({ createdAt: -1 });
+
+    // res.status(200).json({
+    //   success: true,
+    //   count: alerts.length,
+    //   data: alerts,
+    // });
+
+    res.status(200).json(
+            new CustomResponse(200, "Today's alerts fetched", alerts)
+        );
+  } catch (err) {
+    // res.status(500).json({
+    //   success: false,
+    //   message: "Failed to fetch today's alerts",
+    // });
+    next(err);
+  }
 };

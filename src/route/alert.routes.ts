@@ -5,7 +5,8 @@ import {
     getAlertById,
     updateAlert,
     deleteAlert,
-    toggleLike, getLatestAlerts
+    toggleLike, getLatestAlerts,
+    getTodayAlerts
 } from "../controller/alert.controller";
 import {protect} from "../middleware/verify.token";
 import {restrictTo} from "../middleware/role.verify";
@@ -21,6 +22,15 @@ router.get("/latest",
     protect,
     getLatestAlerts);
 
+router.get("/today",
+     protect, 
+     getTodayAlerts);
+
+// Likes (any logged-in user)
+router.post("/:id/like",
+    protect,
+    toggleLike);
+
 router.get("/:id",
     protect,
     getAlertById);
@@ -28,21 +38,19 @@ router.get("/:id",
 // Admin / Moderator only
 router.post("/",
     protect,
-    restrictTo("admin", "moderator"),
+    restrictTo("admin"),
     createAlert);
 
 router.put("/:id",
-    protect, restrictTo("admin", "moderator"),
+    protect, restrictTo("admin"),
     updateAlert);
 
 router.delete("/:id",
-    protect, restrictTo("admin", "moderator"),
+    protect, restrictTo("admin"),
     deleteAlert);
 
-// Likes (any logged-in user)
-router.post("/:id/like",
-    protect,
-    toggleLike);
+
+
 
 
 

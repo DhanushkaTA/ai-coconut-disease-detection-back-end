@@ -3,14 +3,19 @@ import {
     createPost,
     deletePost,
     getAllPosts,
+    getAllPostsByUser,
     getPostById,
-    togglePostLike
+    togglePostLike,
+    updatePost
 } from "../controller/post.controller";
 import {protect} from "../middleware/verify.token";
 // import { protect } from "../middleware/auth.middleware";
 
 const router = Router();
 
+router.get("/user",
+    protect,
+    getAllPostsByUser);
 router.post("/",
     protect,
     createPost);
@@ -26,5 +31,8 @@ router.delete("/:id",
 router.post("/:id/like",
     protect,
     togglePostLike);
+router.put("/",
+    protect,
+    updatePost);
 
 export default router;
