@@ -4,6 +4,7 @@ import { AppError } from "../util/AppError";
 import { CustomResponse } from "../util/CustomResponse";
 import { log } from "console";
 import AlertCommentModel from "../model/alert.comment.model";
+import { getIO } from "../socket/socket";
 
 export const createAlert = async (
     req: any,
@@ -28,6 +29,17 @@ export const createAlert = async (
             description,
             image,
             createdBy: req.user?._id
+        });
+
+        // 🔔 Emit notification to ALL connected users
+        const io = getIO();
+
+        io.emit("new_alert", {
+        _id: alert._id,
+        title: alert.title,
+        description: alert.description,
+        image: alert.image,
+        createdAt: alert.createdAt,
         });
 
         res.status(201).json(

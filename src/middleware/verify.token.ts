@@ -1,33 +1,19 @@
 import express from "express";
-import jwt, {Secret} from "jsonwebtoken";
-import * as process from "process";
+import jwt, {Secret} from "jsonwebtoken";u
 import {promisify} from "util";
 import {AppError} from "../util/AppError";
 import * as StatusCodes from '../util/StatusCode'
-// import {TokenData} from "../type/CustomeTypes";
 import * as StatusCode from "../util/StatusCode";
-import * as Role from "../util/Role";
 import {JWT_SECRET} from "../config/env";
 import UserModel from "../model/user.model";
-// import * as AdminAuthService from "../services/AdminAuthService";
 
 export const protect = async (req:any, res:express.Response, next:express.NextFunction) => {
 
     try {
 
-        // console.log("A :",req.headers.authorization)
-
-        // [Bearer <token>]
-        //that's why authorizationToken split from ''(space)
-        //then we can get jwt token
         let token: string | null = null;
 
         //1) Extract token from authorization cookies
-
-        // if (req.headers.authorization && req.headers.authorization.startsWith(`Bearer`)){
-        //     token = req.headers.authorization.split(" ")[1];
-        // }
-
         if (req.cookies && req.cookies.access_token) {
             token = req.cookies.access_token;
         }
@@ -44,25 +30,6 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
         //2) Check token is blacklisted or not
 
-
-        // let is_blackList = await AuthService.checkIsBlackList(token);
-
-        // if (is_blackList){
-        //     return next(
-        //         new AppError(
-        //             "Black listed token! You can't use this any longer!",
-        //             401,
-        //             StatusCode.UNAUTHORIZED_ACCESS
-        //         )
-        //     )
-        // }
-
-
-        //3) Check token is verified
-
-        // const decodedData =
-        //     await promisify<string, Secret, TokenData>(jwt.verify)(token, process.env.ACCESS_TOKEN_SECRET as Secret);
-
         // @ts-ignore
         const decodedData:any = await promisify(jwt.verify)(token, JWT_SECRET as Secret);
         // console.log(decodedData)
@@ -71,13 +38,6 @@ export const protect = async (req:any, res:express.Response, next:express.NextFu
 
         const user =
             await UserModel.findById(decodedData._id, undefined, undefined);
-
-        // console.log(user)
-
-
-        // If user not found send error
-
-        //!user_or_sub_user.isActive
 
         if (!user){
 
