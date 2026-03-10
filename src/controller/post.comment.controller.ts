@@ -68,3 +68,74 @@ export const getCommentsByAlert = async (
         next(err);
     }
 };
+
+export const getCommentsByAlertV2 = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId } = req.params;
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const skip = (page - 1) * limit;
+
+    // 1️⃣ Count total root comments
+    const totalRootComments = await PostCommentSchema.countDocuments({
+      postId,
+      parentCommentId: null,
+    });
+
+    // 2️⃣ Get paginated root comments
+    const rootComments = await PostCommentSchema.find({
+      postId,
+      parentCommentId: null,
+    })
+      .populate("userId", "firstName lastName profilePic")
+      .sort({ createdAt: -1 }) // newest first (recommended)
+      .skip(skip)
+      .limit(limit);
+
+    const rootIds = rootComments.map((c) => c._id);
+
+    // 3️⃣ Get replies for those root comments
+    const replies = await PostCommentSchema.find({
+      parentCommentId: { $in: rootIds },
+    })
+      .populate("userId", "firstName lastName profilePic")
+      .sort({ createdAt: 1 });
+
+    // 4️⃣ Attach replies to their parents
+    const commentMap = new Map<string, any>();
+
+    rootComments.forEach((comment: any) => {
+      commentMap.set(comment._id.toString(), {
+        ...comment.toObject(),
+        replies: [],
+      });
+    });
+
+    replies.forEach((reply: any) => {
+      const parent = commentMap.get(reply.parentCommentId.toString());
+      if (parent) {
+        parent.replies.push(reply);
+      }
+    });
+
+    const finalComments = Array.from(commentMap.values());
+
+    res.json(
+      new CustomResponse(200, "Comments fetched", {
+        comments: finalComments,
+        currentPage: page,
+        totalPages: Math.ceil(totalRootComments / limit),
+        totalComments: totalRootComments,
+        hasMore: page * limit < totalRootComments,
+      })
+    );
+  } catch (err) {
+    next(err);
+  }
+};

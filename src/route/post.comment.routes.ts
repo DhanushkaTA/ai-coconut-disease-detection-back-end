@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
     addComment,
     getCommentsByAlert,
+    getCommentsByAlertV2,
     // updateComment,
     // deleteComment
 } from "../controller/post.comment.controller";
@@ -13,6 +14,10 @@ const router = Router();
 router.post("/:postId",
     protect,
     addComment);
+
+router.get("/:postId",
+    protect,
+    getCommentsByAlertV2);
 
 // router.get("/:alertId",
 //     protect,

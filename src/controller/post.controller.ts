@@ -5,6 +5,7 @@ import { AppError } from "../util/AppError";
 import { getIO } from "../socket/socket";
 import {ICommentWithReplies, IPost} from "../type/schema.type";
 import postCommentModel from "../model/post.comment.model";
+import mongoose from "mongoose";
 
 
 export const createPost = async (req: any, res: Response, next: NextFunction) => {
@@ -114,7 +115,7 @@ export const getPostById = async (req: Request, res: Response, next: NextFunctio
 
         const comments = await postCommentModel.find({ postId: id })
         .populate("userId", "firstName lastName profilePic")
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .lean();
 
         // Build nested comment tree
@@ -196,3 +197,128 @@ export const togglePostLike = async (req: any, res: Response, next: NextFunction
         next(err);
     }
 }
+
+export const getAllPostsByUser = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user!._id);
+    
+
+    console.log(userId);
+    
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5;
+    const search = req.query.search || "";
+
+    const skip = (page - 1) * limit;
+
+    // 🔹 Base match (only this user's posts)
+    const matchConditions: any = {
+      createdBy: userId,
+    };
+
+    // 🔹 If search exists → filter only by content
+    if (search) {
+      matchConditions.content = { $regex: search, $options: "i" };
+    }
+
+    const aggregationPipeline: any[] = [
+      {
+        $match: matchConditions,
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+          ],
+          totalCount: [
+            { $count: "count" },
+          ],
+        },
+      },
+    ];
+
+    const result = await PostModel.aggregate(aggregationPipeline);
+
+    const posts = result[0].data;
+    const totalCount = result[0].totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.json(
+      new CustomResponse(
+        200,
+        "User posts fetched successfully",
+        posts,
+        totalPages
+      )
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updatePost = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id, content, image } = req.body;
+
+    // ✅ Validate id
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return next(new AppError("Invalid post ID", 400));
+    }
+
+    // ✅ Validate content
+    if (!content || content.trim() === "") {
+      return next(new AppError("Content is required", 400));
+    }
+
+    const postId = new mongoose.Types.ObjectId(id);
+    const userId = new mongoose.Types.ObjectId(req.user!._id);
+
+    // ✅ Find post
+    const post = await PostModel.findById(postId);
+
+    if (!post) {
+      return next(new AppError("Post not found", 404));
+    }
+
+    // ✅ Check ownership
+    if (post.createdBy.toString() !== userId.toString()) {
+      return next(new AppError("Unauthorized to update this post", 403));
+    }
+
+    // ✅ Update fields
+    post.content = content.trim();
+    post.image = image || "";
+
+    await post.save();
+
+    res.json(
+      new CustomResponse(200, "Post updated successfully", post)
+    );
+  } catch (err) {
+    next(err);
+  }
+};

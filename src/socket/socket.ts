@@ -18,7 +18,7 @@ export const initSocket = (server: http.Server) => {
     io = new Server(server, {
         cors: {
             // origin: "*",
-            origin: ["http://localhost:5173","http://localhost:5174"],
+            origin: ["http://localhost:5173","http://localhost:5174", "http://localhost:5175"],
             credentials: true
         }
     });
@@ -40,10 +40,6 @@ export const initSocket = (server: http.Server) => {
 
             console.log("Authenticated cookies:", data[1]);
 
-
-            // const cookies = cookie.parse(cookieHeader);
-            //  console.log("Authenticated cookies:", cookies);
-            // const token = cookies.access_token;
             const token = data[1];
 
             console.log("Authenticated token:", token);
@@ -207,12 +203,15 @@ const chatSocketHandler = (socket: Socket) => {
             image,
         });
 
+        const user = await UserModel.findById(senderId);
+
         chat.lastMessage = message._id;
         chat.updatedAt = new Date();
         await chat.save();
 
         // 🔔 Notify receiver (for unread badge)
-        io.to(receiverId).emit("receive_message_notification", message);
+        // io.to(receiverId).emit("receive_message_notification", message);
+        io.to(receiverId).emit("receive_message_notification", { ...message.toObject(), senderName: user.firstName});
 
         // 💬 Emit to chat room
         // io.to(`room_${chat._id}`).emit("receive_message", message);

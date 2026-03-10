@@ -41,13 +41,25 @@ export const getCommentsByAlert = async (
     try {
         const { alertId } = req.params;
 
-        const comments =
-            await AlertCommentModel.find({alertId:alertId}, undefined, undefined)
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+
+        const total = await AlertCommentModel.countDocuments({ alertId });
+        const skip = (page - 1) * limit;
+
+        const comments = await AlertCommentModel.find({ alertId })
             .populate("userId", "firstName lastName profilePic")
-            .sort({ createdAt: 1 });
+            .sort({ createdAt: -1 }) // newest first
+            .skip((page - 1) * limit)
+            .limit(limit);
 
         res.json(
-            new CustomResponse(200, "Comments fetched", comments)
+            new CustomResponse(200, "Comments fetched", {
+                comments,
+                total,
+                page,
+                totalPages: Math.ceil(total / limit),
+            })
         );
     } catch (err) {
         next(err);
